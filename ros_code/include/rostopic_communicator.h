@@ -1,9 +1,11 @@
-#ifndef _SENSOR_PUBLISHER_H_
-#define _SENSOR_PUBLISHER_H_
+#ifndef _ROSTOPIC_COMMUNICATOR_H_
+#define _ROSTOPIC_COMMUNICATOR_H_
 
 #include <iostream>
 #include <ros/ros.h>
-#include <std_msgs/Int8MultiArray.h>
+#include <std_msgs/Int8MultiArray.h> // from nucleo
+#include <std_msgs/UInt16MultiArray.h> // to nucleo
+
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/BatteryState.h>
 #include <sensor_msgs/Range.h>
@@ -14,7 +16,29 @@
 #define CAMERA_TRIGGER_LOW  0b01010101
 #define CAMERA_TRIGGER_HIGH 0b10101010
 
-class SensorPublisher {
+class ROSTopicCommunicator {
+// User command (desired wheel angular velocity only)
+private:
+    double w_left_desired_;
+    double w_right_desired_;
+
+
+        // datatype::FLOAT_UNION kp,kd,ki;
+        // w_left_desired_.float_  = 0.0f;
+        // w_right_desired_.float_ = 0.0f;
+        // kp.float_ = 1.1;//1.5;
+        // kd.float_ = 0.07;//10.5;
+        // ki.float_ = 0.0;//0.8;
+
+        // // 2. Send TCP/IP data (to MCU)
+        // // sprintf(buff_snd_, "%d : %s", len_read, buff_rcv_);
+        // for(int j = 0; j < 4; ++j) buff_snd_[j]    = w_left_desired_.bytes_[j];
+        // for(int j = 0; j < 4; ++j) buff_snd_[j+4]  = w_right_desired_.bytes_[j];
+        // for(int j = 0; j < 4; ++j) buff_snd_[j+8]  = kp.bytes_[j];
+        // for(int j = 0; j < 4; ++j) buff_snd_[j+12] = kd.bytes_[j];
+        // for(int j = 0; j < 4; ++j) buff_snd_[j+16] = ki.bytes_[j];
+
+// Sensor data from the AMR
 private:
 // IMU related
     double time_; // in sec.
@@ -38,6 +62,7 @@ private:
 // ROS nodehandle
     ros::NodeHandle nh_;
     ros::Subscriber sub_serial_; 
+    ros::Publisher  pub_serial_;
 
 // ROS Publishers
     ros::Publisher pub_imu_; // IMU data
@@ -179,18 +204,19 @@ private:
     }
 
 public:
-    SensorPublisher(ros::NodeHandle& nh) 
+    ROSTopicCommunicator(ros::NodeHandle& nh) 
     : nh_(nh) 
     {
         acc_scale_   = 9.8065; // m/s2
         gyro_scale_  = M_PI/180.0f; // rad/s
         mag_scale_   = 10.0*4219.0/32760.0; // milliGauss
 
-        // Subscriber
-        sub_serial_ = nh.subscribe<std_msgs::Int8MultiArray>("/serial/pc/from_nucleo",1, &SensorPublisher::callbackSerial, this);
+        // serial_
+        sub_serial_ = nh_.subscribe<std_msgs::Int8MultiArray>("/serial/pc/from_nucleo",1, &ROSTopicCommunicator::callbackSerial, this);
+        pub_serial_ = nh_.advertise<std_msgs::Int8MultiArray>("/serial/pc/to_nucleo", 1);
 
         // publisher
-        pub_imu_ = nh.advertise<sensor_msgs::Imu>("/icm42605/imu",1);
+        pub_imu_ = nh_.advertise<sensor_msgs::Imu>("/icm42605/imu",1);
 
         pub_battery_state_[0] = nh.advertise<sensor_msgs::BatteryState>("/battery_state/0",1);
         pub_battery_state_[1] = nh.advertise<sensor_msgs::BatteryState>("/battery_state/1",1);

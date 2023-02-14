@@ -1,4 +1,4 @@
-#include "serial_communicator.h"
+#include "serial_library_linux/serial_comm_linux.h"
 
 SerialCommunicator::SerialCommunicator(const std::string& portname, const int& baud_rate)
     : seq_recv_(0), seq_send_(0), 

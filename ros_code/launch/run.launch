@@ -10,6 +10,10 @@
 
     <arg name="rosnode_frequency"     default="2000"/> <!-- 2000 Hz default. This node needs to poll the data from MCU. -->
 
+
+    <node pkg="f446_amr_shield_ros" name="sensor_publisher_node" type="sensor_publisher_node" output="screen">
+    </node> 
+
     <node pkg="f446_amr_shield_ros" name="serial_node" type="serial_node" output="screen">
         <param name="serial_port"           type="string" value="$(arg serial_port)"/>
         <param name="baud_rate"             type="int"    value="$(arg baud_rate)"/>
@@ -18,10 +22,6 @@
         <param name="topicname_from_nucleo" type="string" value="$(arg topicname_from_nucleo)"/>
         <param name="frequency"             type="int"    value="$(arg rosnode_frequency)"/>
     </node>
-
-    <node pkg="f446_amr_shield_ros" name="sensor_publisher_node" type="sensor_publisher_node" output="screen">
-    </node> 
-
-    <node pkg="f446_amr_shield_ros" name="test_publisher_node" type="test_publisher_node" output="screen">
-    </node> 
+    <!-- <node pkg="f446_amr_shield_ros" name="test_publisher_node" type="test_publisher_node" output="screen">
+    </node>  -->
 </launch>

@@ -7,7 +7,7 @@
 #include <std_msgs/Int8MultiArray.h>
 #include <std_msgs/UInt16MultiArray.h>
 
-#include "serial_communicator.h"
+#include "serial_library_linux/serial_comm_linux.h"
 
 #define BUF_SIZE 1024
 
