@@ -3,9 +3,13 @@ This repository is for **F446_AMR_Shield** designed by CHKim.
 
 Main role of this package is to make a serial communication between 'Nucleo-F446RE' and 'PC(USB)'.
 
+Details about the overall LARR AMR system can be found in this. [link:]
+
+You can approach the on-board PC of the AMR, and control the AMR by the **SSH remote control** within the same Wi-Fi network.
+
 F446_AMR_Shield can provide belows:
 
-* Serial communication between Nucleo-F446RE and PC via USB 2.0 (3.0 OK). Default baudrate is 460800.
+* Serial communication between Nucleo-F446RE and PC via USB 2.0 (3.0 is OK). Default baudrate is 460800.
 
 * 4 x PWM outputs (two motor-dedicated PWMs + two auxiliary PWMs with configurable frequencies (500 Hz default, 1 ~ 3,000 Hz tested, HIGH level: 3.3 volt.)
 
@@ -14,7 +18,7 @@ F446_AMR_Shield can provide belows:
 
 * Trigger signal at 1 Hz (synchronized by the F446 internal clock)
 
-* 2 x 3.3 V , 2 x 5.0 V pinouts. (only for peripheral MEMS sensors with low power consumption)
+* 2 x 3.3 V , 2 x 5.0 V pinouts. (use only for **low-power-consumption devices** such as peripheral MEMS sensors)
     
 * 1 x IMU data. 3-D acc. 3-D gyro from Invensense ICM-42605, up to 1 kHz **(IMU is not included on the shield.)**
 
@@ -26,10 +30,10 @@ Tested in:
 1.Installations
 ------
 * Prerequisites
-    * ROS1
-    * Mbed studio
+    * ROS1 (recommend: the full desktop version)
+    * Mbed studio (STMicro, for uploading the embedded program to the Nucleo F446 board.)
 
-* Linux (PC)
+* On-board Linux PC (on the AMR)
 ```
 cd ~/{$YOUR_WORKSPACE}/src
 git clone https://github.com/ChanghyeonKim93/f446_amr_shield_ros.git
@@ -50,10 +54,14 @@ cd .. && catkin build f446_amr_shield_ros
 
 2.Usage
 ------
-    roslaunch f446_amr_shield_ros run.launch 
-    
-   
+* Execute the below at the 'on-board Linux PC of the AMR' by the SSH remote control.
+
+```
+roslaunch f446_amr_shield_ros run.launch 
+```    
+
 Befure usage, please **set a serial portname** (refer the below documentation to set the permanent udevrules name.), topicnames, baudrate and so on.
+
 
 
 3.Materials
