@@ -39,7 +39,7 @@ void SerialCommROS::getParameters(){
         throw std::runtime_error("SerialCommROS - no 'serial_port' is set. terminate program.\n");
     if(!ros::param::has("~baud_rate")) 
         throw std::runtime_error("SerialCommROS - no 'baud_rate' is set. terminate program.\n");
-    if(!ros::param::has("~topicname_pwm"))      
+    if(!ros::param::has("~topicname_to_nucleo"))      
         throw std::runtime_error("SerialCommROS - no 'topicname_pwm' is set. terminate program.\n");
     if(!ros::param::has("~topicname_from_nucleo"))  
         throw std::runtime_error("SerialCommROS - no 'topicname_from_nucleo' is set. terminate program.\n");
@@ -48,11 +48,11 @@ void SerialCommROS::getParameters(){
     
     ros::param::get("~serial_port",           portname_);
     ros::param::get("~baud_rate",             baudrate_);
-    ros::param::get("~topicname_pwm",         topicname_msg_to_send_);
+    ros::param::get("~topicname_to_nucleo",   topicname_msg_to_send_);
     ros::param::get("~topicname_from_nucleo", topicname_msg_recv_);
     ros::param::get("~frequency",             loop_frequency_);
 
-    ROS_INFO_STREAM("topicname PWM        : " << topicname_msg_to_send_);
+    ROS_INFO_STREAM("topicname   to nucleo: " << topicname_msg_to_send_);
     ROS_INFO_STREAM("topicname from nucleo: " << topicname_msg_recv_);
 
 };
