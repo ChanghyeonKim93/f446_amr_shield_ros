@@ -5,15 +5,23 @@
     <!-- 921600: For 400 Hz TX/RX, up to 80 bytes can be sent. (TX 80 bytes, RX 80 bytes = 160 bytes)-->
 
     <!-- Topicnames & motor control signal publish frequency-->
-    <arg name="topicname_to_nucleo"   default="/serial/pc/to_nucleo"/>
-    <arg name="topicname_from_nucleo" default="/serial/pc/from_nucleo"/>
+    <arg name="topicname_to_nucleo"   default="/raw_serial/to_nucleo"/>
+    <arg name="topicname_from_nucleo" default="/raw_serial/from_nucleo"/>
 
     <arg name="rosnode_frequency"     default="2000"/> <!-- 2000 Hz default. This node needs to poll the data from MCU. -->
 
+    <!-- Topicname of the user control commands (drone version / AMR version)-->
+    <arg name="topicname_user_command_drone" default="/drone/user_command/pwms_desired"/>
+    <arg name="topicname_user_command_amr"   default="/amr/user_command/wheels_desired"/>
 
-    <node pkg="f446_amr_shield_ros" name="sensor_publisher_node" type="sensor_publisher_node" output="screen">
+
+    <!-- Run rostopic node -->
+    <node pkg="f446_amr_shield_ros" name="rostopic_node" type="rostopic_node" output="screen">
+        <param name="topicname_user_command_drone" type="string" value="$(arg topicname_user_command_drone)"/>
+        <param name="topicname_user_command_amr"   type="string" value="$(arg topicname_user_command_amr)"/>
     </node> 
 
+    <!-- Run serial node (serial communication between Nucleo board)-->
     <node pkg="f446_amr_shield_ros" name="serial_node" type="serial_node" output="screen">
         <param name="serial_port"           type="string" value="$(arg serial_port)"/>
         <param name="baud_rate"             type="int"    value="$(arg baud_rate)"/>
@@ -22,6 +30,7 @@
         <param name="topicname_from_nucleo" type="string" value="$(arg topicname_from_nucleo)"/>
         <param name="frequency"             type="int"    value="$(arg rosnode_frequency)"/>
     </node>
+
     <!-- <node pkg="f446_amr_shield_ros" name="test_publisher_node" type="test_publisher_node" output="screen">
     </node>  -->
-</launch>
+</launch> 

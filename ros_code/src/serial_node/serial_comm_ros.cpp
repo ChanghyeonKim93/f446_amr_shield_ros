@@ -20,7 +20,7 @@ baudrate_(115200), loop_frequency_(400)
     serial_communicator_ = std::make_shared<SerialCommunicator>(portname_, baudrate_);
     
     // subscriber
-    sub_msg_to_send_ = nh_.subscribe<std_msgs::UInt16MultiArray>(topicname_msg_to_send_, 1, &SerialCommROS::callbackToSend, this);
+    sub_msg_to_send_ = nh_.subscribe<std_msgs::Int8MultiArray>(topicname_msg_to_send_, 1, &SerialCommROS::callbackToSend, this);
 
     // publisher
     pub_msg_recv_ = nh_.advertise<std_msgs::Int8MultiArray>(topicname_msg_recv_,1);
@@ -93,9 +93,18 @@ void SerialCommROS::run(){
     }
 };
 
-void SerialCommROS::callbackToSend(const std_msgs::UInt16MultiArray::ConstPtr& msg){
-    int len = this->fill16bitsTo8bits(msg,buf_send_);
-    sendMessageToNucleo(buf_send_, len);
+void SerialCommROS::callbackToSend(const std_msgs::Int8MultiArray::ConstPtr& msg){
+
+    char mode = msg->data[0];
+    int   len = msg->data.size();
+    
+    // Drone mode (0): mode(1 byte) + 16 (=2*8) bytes (total eight PWM signals)
+    // AMR mode   (1): mode(1 byte) + 20 (=4*5) bytes (two wheels, three control gains (P, I, D))
+    for(int i = 1; i < len; ++i){
+        buf_send_[i-1] = msg->data[i];
+    }
+
+    sendMessageToNucleo(buf_send_, len-1);
 };  
 
 void SerialCommROS::showSerialStatistics(double dt){
@@ -138,15 +147,15 @@ void SerialCommROS::sendMessageToNucleo(unsigned char* data, int len){
     serial_communicator_->sendPacket(data, len);
 };
 
-int SerialCommROS::fill16bitsTo8bits(const std_msgs::UInt16MultiArray::ConstPtr& msg, unsigned char* buf_send){
-    int len = msg->data.size();
+// int SerialCommROS::fill16bitsTo8bits(const std_msgs::UInt16MultiArray::ConstPtr& msg, unsigned char* buf_send){
+//     int len = msg->data.size();
     
-    USHORT_UNION data_union;
-    for(int i = 0; i < len; ++i) {
-        data_union.ushort_ = msg->data[i];
-        buf_send_[2*i]     = data_union.bytes_[0];
-        buf_send_[2*i+1]   = data_union.bytes_[1];
-    }
+//     USHORT_UNION data_union;
+//     for(int i = 0; i < len; ++i) {
+//         data_union.ushort_ = msg->data[i];
+//         buf_send_[2*i]     = data_union.bytes_[0];
+//         buf_send_[2*i+1]   = data_union.bytes_[1];
+//     }
 
-    return len*2;      
-};
+//     return len*2;      
+// };

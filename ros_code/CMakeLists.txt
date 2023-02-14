@@ -45,8 +45,8 @@ include_directories( ${catkin_INCLUDE_DIRS} )
 include_directories( ${Eigen_INCLUDE_DIRS} )
 
 # executables
-add_executable(rostopic_communicator_node src/rostopic_node/main_rostopic_communicator.cpp ${SRC})
-target_link_libraries (rostopic_communicator_node ${catkin_LIBRARIES} ${Eigen_LIBRARIES})
+add_executable(rostopic_node src/rostopic_node/main_rostopic_communicator.cpp ${SRC})
+target_link_libraries (rostopic_node ${catkin_LIBRARIES} ${Eigen_LIBRARIES})
 
 add_executable(serial_node src/serial_node/main_serial_node.cpp ${SRC})
 target_link_libraries (serial_node ${catkin_LIBRARIES} ${Eigen_LIBRARIES} ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_REGEX_LIBRARY})

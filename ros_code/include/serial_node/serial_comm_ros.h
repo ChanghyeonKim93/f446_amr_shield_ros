@@ -5,7 +5,6 @@
 #include <ros/ros.h>
 
 #include <std_msgs/Int8MultiArray.h>
-#include <std_msgs/UInt16MultiArray.h>
 
 #include "serial_library_linux/serial_comm_linux.h"
 
@@ -25,8 +24,8 @@ private:
     void run();
 
     /// @brief Function is called by the 'sub_msg_to_send_', and send the user message to the Nucleo.
-    /// @param msg packet from the user. In this implementation, PWM signals (uint16_t) are only considered.
-    void callbackToSend(const std_msgs::UInt16MultiArray::ConstPtr& msg);
+    /// @param msg packet from the user. In this implementation, I consider two modes, (drone, AMR) data (int8_t) are only considered.
+    void callbackToSend(const std_msgs::Int8MultiArray::ConstPtr& msg);
 
 private:
     void showSerialStatistics(double dt);
@@ -46,7 +45,7 @@ private:
 // Packet manipulation (sending user's message.)
 private:
     void sendMessageToNucleo(unsigned char* data, int len);
-    int fill16bitsTo8bits(const std_msgs::UInt16MultiArray::ConstPtr& msg, unsigned char* buf_send);
+    // int fill16bitsTo8bits(const std_msgs::UInt16MultiArray::ConstPtr& msg, unsigned char* buf_send);
 
 // Serial port related (Boost)
 private:
@@ -66,7 +65,8 @@ private:
     // TX messages (message from the Nucleo. Received packet is published as a form of UInt16MultiArray.)
     std::string topicname_msg_to_send_;
     ros::Subscriber sub_msg_to_send_;
-    std_msgs::UInt16MultiArray msg_to_send_;
+    // std_msgs::UInt16MultiArray msg_to_send_;
+    std_msgs::Int8MultiArray msg_to_send_;
 
     // RX messages (message which the user want to send to the Nucleo.)
     std::string topicname_msg_recv_;

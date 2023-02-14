@@ -3,13 +3,15 @@
 
 #include <iostream>
 #include <ros/ros.h>
-#include <std_msgs/Int8MultiArray.h> // from nucleo
-#include <std_msgs/UInt16MultiArray.h> // to nucleo
+#include <std_msgs/Int8MultiArray.h> // from nucleo, to nucleo
 
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/BatteryState.h>
 #include <sensor_msgs/Range.h>
 #include <sensor_msgs/JointState.h>
+
+#include <std_msgs/UInt16MultiArray.h> // Drone PWM messages
+#include <std_msgs/Float32MultiArray.h> // AMR control messages
 
 #include "../utility/union_struct.h"
 
@@ -19,9 +21,14 @@
 class ROSTopicCommunicator {
 private:
     void callbackSerialFromNucleo(const std_msgs::Int8MultiArray::ConstPtr& msg);
+
+    void callbackControlInputs_Drone(const std_msgs::UInt16MultiArray::ConstPtr& msg); // eight PWM signals
+    void callbackControlInputs_AMR(const std_msgs::Float32MultiArray::ConstPtr& msg); // two desired angular velocities, and three motor gains (P,I,D). All data is in 'float'.
+ 
     void run();
 
 public:
+// Constructor
     ROSTopicCommunicator(ros::NodeHandle& nh) ;
 
 
@@ -72,6 +79,12 @@ private:
     ros::NodeHandle nh_;
     ros::Subscriber sub_serial_; 
     ros::Publisher  pub_serial_;
+
+    ros::Subscriber sub_user_command_drone_;
+    ros::Subscriber sub_user_command_amr_;
+
+    std::string topicname_user_command_drone_;
+    std::string topicname_user_command_amr_;
 
     // ROS Publishers
     ros::Publisher pub_imu_; // IMU data
