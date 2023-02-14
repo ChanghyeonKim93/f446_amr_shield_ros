@@ -19,9 +19,10 @@
 #include <boost/asio.hpp>
 #include <boost/asio/serial_port.hpp>
 
-#include "union_struct.h"
 #include "crc16.h" // CRC16 checksum test
-#include "timer.h"
+
+#include "utility/union_struct.h"
+#include "utility/timer.h"
 
 #define DLE 0x10
 #define STX 0x02

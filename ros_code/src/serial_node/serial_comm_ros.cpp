@@ -1,4 +1,4 @@
-#include "serial_comm_ros.h"
+#include "serial_node/serial_comm_ros.h"
 
 SerialCommROS::SerialCommROS(ros::NodeHandle& nh)
 : nh_(nh), portname_("/dev/ttyACM0"), 

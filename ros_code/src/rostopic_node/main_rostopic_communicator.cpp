@@ -2,7 +2,7 @@
 #include <string>
 
 #include <ros/ros.h>
-#include "rostopic_communicator.h"
+#include "rostopic_node/rostopic_communicator.h"
 
 int main(int argc, char **argv) {
     ros::init(argc, argv, "rostopic_communicator_node");
