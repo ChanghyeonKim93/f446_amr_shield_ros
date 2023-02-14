@@ -37,16 +37,18 @@ void sonarCallbackFunction(int dist) { return; };
 ULTRASONIC ultra_sonic(SONAR_TRG, SONAR_ECHO, SONAR_SAMPLING_PERIOD_MS, SONAR_TIMEOUT_MS, &sonarCallbackFunction);
 
 // Drone Motors PWM signals
-#include "drone_motor_pwm.h"
+#include "drone_pwm_library/drone_motor_pwm.h"
 uint16_t pwm_values[8] = {0,0,0,0,0,0,0,0};
 DroneMotorPwm motor_pwm;
-void setMotorPWM_01234567(uint16_t pwm_ushort[8]) {
+void setDroneMotorPWM_01234567(uint16_t pwm_ushort[8]) {
     for(int i = 0; i < 8; ++i){
         if(pwm_ushort[i] < 0 )   pwm_ushort[i] = 0;
         if(pwm_ushort[i] > 4095) pwm_ushort[i] = 4095;
     }
     motor_pwm.setPWM_all(pwm_ushort);
 };
+
+// AMR Motors PWM signals
 
 // Analog-Digital Converter (Battery Voltage and current)
 USHORT_UNION adc1_voltage_ushort;
@@ -73,7 +75,7 @@ MotorEncoder motor_encoder(MOTOR_ENCODER_PERIOD_MS);
 
 
 // Serial communication
-#include "serial_comm_mbed.h"
+#include "serial_library/serial_comm_mbed.h"
 Timeout timeout_serial_read;
 void flipLED() { led_signal = !led_signal; };
 
@@ -82,8 +84,8 @@ uint8_t  packet_recv[256];
 uint32_t len_packet_recv = 0;
 uint32_t len_packet_send = 0;
 enum MessageTypeByLength {
-    EMPTY = 0,
-    PWMCOMMAND = 16
+    PWMCOMMAND = 17,
+    AMRCOMMAND = 21
 };
 SerialCommunicatorMbed serial_usb(BAUD_RATE, SERIAL_TX_PIN, SERIAL_RX_PIN);
 
@@ -91,6 +93,11 @@ SerialCommunicatorMbed serial_usb(BAUD_RATE, SERIAL_TX_PIN, SERIAL_RX_PIN);
 #include "icm42605_library/icm42605_spi.h"
 ICM42605_SPI imu;
 
+
+
+
+
+// Define the behavior function when the serial data is received.
 void workfunction_readSerialUSB() {
     if(serial_usb.tryToReadSerialBuffer()) { // packet ready!
         led_signal = 1;
@@ -99,32 +106,46 @@ void workfunction_readSerialUSB() {
         int len_recv_message = 0;
         len_recv_message = serial_usb.getReceivedMessage(packet_recv); 
 
-        if( len_recv_message == MessageTypeByLength::PWMCOMMAND ) 
-        { 
-
-            // Successfully received the packet.
-            // In case of 8 PWM signals.
-            // ======== USER-DEFINED CODE START ======== 
-            USHORT_UNION pwm_tmp;
-            pwm_tmp.bytes_[0] = packet_recv[0];  pwm_tmp.bytes_[1] = packet_recv[1];   pwm_values[0] = pwm_tmp.ushort_;
-            pwm_tmp.bytes_[0] = packet_recv[2];  pwm_tmp.bytes_[1] = packet_recv[3];   pwm_values[1] = pwm_tmp.ushort_;
-            pwm_tmp.bytes_[0] = packet_recv[4];  pwm_tmp.bytes_[1] = packet_recv[5];   pwm_values[2] = pwm_tmp.ushort_;
-            pwm_tmp.bytes_[0] = packet_recv[6];  pwm_tmp.bytes_[1] = packet_recv[7];   pwm_values[3] = pwm_tmp.ushort_;
-            pwm_tmp.bytes_[0] = packet_recv[8];  pwm_tmp.bytes_[1] = packet_recv[9];   pwm_values[4] = pwm_tmp.ushort_;
-            pwm_tmp.bytes_[0] = packet_recv[10]; pwm_tmp.bytes_[1] = packet_recv[11];  pwm_values[5] = pwm_tmp.ushort_;
-            pwm_tmp.bytes_[0] = packet_recv[12]; pwm_tmp.bytes_[1] = packet_recv[13];  pwm_values[6] = pwm_tmp.ushort_;
-            pwm_tmp.bytes_[0] = packet_recv[14]; pwm_tmp.bytes_[1] = packet_recv[15];  pwm_values[7] = pwm_tmp.ushort_;
-
-            setMotorPWM_01234567(pwm_values);     
-            // ======== USER-DEFINED CODE END ========      
-        }
-        else if( len_recv_message == MessageTypeByLength::EMPTY)
+        if( len_recv_message > 0)
         {
-            // empty message is recieved.
-            // ======== USER-DEFINED CODE START ======== 
+            if(packet_recv[0] == 0) 
+            {
+                // For safety, initialize all signals with zero.
+                pwm_values[0] = 0; pwm_values[1] = 0;
+                pwm_values[2] = 0; pwm_values[3] = 0;
+                pwm_values[4] = 0; pwm_values[5] = 0;
+                pwm_values[6] = 0; pwm_values[7] = 0;
+                if( len_recv_message == MessageTypeByLength::PWMCOMMAND ) 
+                { 
+                    // Successfully received the packet.
+                    // In case of 8 PWM signals.
+                    // ======== USER-DEFINED CODE START ======== 
+                    USHORT_UNION pwm_tmp;
+                    pwm_tmp.bytes_[0] = packet_recv[1];  pwm_tmp.bytes_[1] = packet_recv[2];     pwm_values[0] = pwm_tmp.ushort_;
+                    pwm_tmp.bytes_[0] = packet_recv[3];  pwm_tmp.bytes_[1] = packet_recv[4];     pwm_values[1] = pwm_tmp.ushort_;
+                    pwm_tmp.bytes_[0] = packet_recv[5];  pwm_tmp.bytes_[1] = packet_recv[6];     pwm_values[2] = pwm_tmp.ushort_;
+                    pwm_tmp.bytes_[0] = packet_recv[7];  pwm_tmp.bytes_[1] = packet_recv[8];     pwm_values[3] = pwm_tmp.ushort_;
+                    pwm_tmp.bytes_[0] = packet_recv[9];  pwm_tmp.bytes_[1] = packet_recv[10];    pwm_values[4] = pwm_tmp.ushort_;
+                    pwm_tmp.bytes_[0] = packet_recv[11]; pwm_tmp.bytes_[1] = packet_recv[12];    pwm_values[5] = pwm_tmp.ushort_;
+                    pwm_tmp.bytes_[0] = packet_recv[13]; pwm_tmp.bytes_[1] = packet_recv[14];    pwm_values[6] = pwm_tmp.ushort_;
+                    pwm_tmp.bytes_[0] = packet_recv[15]; pwm_tmp.bytes_[1] = packet_recv[16];    pwm_values[7] = pwm_tmp.ushort_;
 
-            // ======== USER-DEFINED CODE END ========      
+                    setDroneMotorPWM_01234567(pwm_values);     
+                }
+            }
+            else if (packet_recv[0] == 1)// AMR mode
+            {
+                if( len_recv_message == MessageTypeByLength::AMRCOMMAND)
+                {
+                    FLOAT_UNION ftmp;
+                    ftmp.bytes_[0] = packet_recv[1]; ftmp.bytes_[1] = packet_recv[2]; ftmp.bytes_[2] = packet_recv[3]; ftmp.bytes_[3] = packet_recv[4];   
+                }
+                else { // for safety.
+
+                }
+            }
         }
+
     }
 };
 void workfunction_sendSerialUSB() {

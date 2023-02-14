@@ -51,4 +51,11 @@
 // PULSE_PER_MOTOR_TURN*GEAR_RATIO == PULSE_PER_ROTATION
 // delta_counter / PULSE_PER_ROTATION == rotated ratio
 // delta_pulses * RADIAN_PER_PULSE == delta_radian
+
+
+// FOR AMR ... 
+#define AMR_MOTOR_LEFT_PWM  PA_0 // pwm2/1, // PWM (TIMER 2)
+#define AMR_MOTOR_RIGHT_PWM PA_1
+#define AMR_PWM_AUX_0       PB_10
+#define AMR_PWM_AUX_1       PB_2
 #endif
