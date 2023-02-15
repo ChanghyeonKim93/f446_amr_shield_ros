@@ -1,0 +1,6 @@
+<launch>
+    <!-- Run rostopic node -->
+    <node pkg="f446_amr_shield_ros" name="keyboard_controller_node" type="keyboard_controller_node" output="screen">
+    </node> 
+
+</launch> 

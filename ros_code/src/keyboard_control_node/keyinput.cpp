@@ -1,10 +1,4 @@
-
-#ifndef _KEYINPUT_H_
-#define _KEYINPUT_H_
-#include <iostream>
-#include <termios.h>
-
-// ref: https://answers.ros.org/question/63491/keyboard-key-pressed/
+#include "keyboard_control_node/keyinput.h"
 
 char getch()
 {
@@ -50,6 +44,4 @@ char getch()
         std::runtime_error("tcsetattr ~ICANON");
     }
     return (buff);
-}
-
-#endif
+};
