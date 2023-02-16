@@ -61,8 +61,9 @@
 // Encoder parameters
 #define MOTOR_ENCODER_PERIOD_MS  10   // in miiliseconds
 #define PULSE_PER_MOTOR_TURN     256 // depends on encoder spec.
+#define ENCODER_TIMES            4
 #define GEAR_RATIO               27  // depends on the gear spec.
-#define PULSE_PER_ROTATION       ((PULSE_PER_MOTOR_TURN)*(GEAR_RATIO))
+#define PULSE_PER_ROTATION       ((PULSE_PER_MOTOR_TURN)*(ENCODER_TIMES)*(GEAR_RATIO))
 #define RADIAN_PER_ROTATION      (6.28318530718f)
 // RADIAN_PER_ROTATION / PULSE_PER_ROTATION == RADIAN_PER_PULSE
 // PULSE_PER_MOTOR_TURN*GEAR_RATIO == PULSE_PER_ROTATION

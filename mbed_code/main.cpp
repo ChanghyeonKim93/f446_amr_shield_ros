@@ -59,7 +59,7 @@ void ledSignals_OK(DigitalOut& led, int n_blink);
 #endif
 
 #ifdef AMR_MODE
-    volatile uint8_t control_step  = 4;
+    volatile uint8_t control_step  = 8;
     volatile uint8_t control_count = 0;
 
     // AMR Motors PWM signals
@@ -68,7 +68,7 @@ void ledSignals_OK(DigitalOut& led, int n_blink);
     float wheels_current[2] = {0,0};
     float pid_gains[3]      = {0,0,0};
     DCMOTOR motor_left(MOTOR_LEFT_PWM, IN0_LEFT, IN1_LEFT);
-    DCMOTOR motor_right(MOTOR_RIGHT_PWM, IN0_RIGHT, IN1_RIGHT);
+    DCMOTOR motor_right(MOTOR_RIGHT_PWM, IN1_RIGHT, IN0_RIGHT);
 
     // Encoder library
     #include "encoder_library/motor_encoder.h"
@@ -326,13 +326,16 @@ int main()
                     signal_trigger = 0;
                 }
 #ifdef AMR_MODE
+                motor_left.updateAngularVelocity(radian_per_sec_A.float_, 0.0025);
+                motor_right.updateAngularVelocity(-radian_per_sec_B.float_, 0.0025);
+                
                 ++control_count;
                 if(control_count >= control_step) {
                     control_count = 0;
                     motor_left.setPIDGains(pid_gains[0],pid_gains[1],pid_gains[2]);
                     motor_right.setPIDGains(pid_gains[0],pid_gains[1],pid_gains[2]);
-                    motor_left.controlAngularVelocity(radian_per_sec_A.float_, wheels_desired[0]);
-                    motor_right.controlAngularVelocity(radian_per_sec_B.float_, wheels_desired[1]);
+                    motor_left.controlAngularVelocity(wheels_desired[0]);
+                    motor_right.controlAngularVelocity(wheels_desired[1]);
                 }
 #endif
                 // IMU data (3D acc, 3D gyro, 3D magnetometer)

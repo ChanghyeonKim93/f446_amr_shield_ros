@@ -1,5 +1,5 @@
 #include "motor_encoder.h"
-
+// 256 pulses * 27 times = pulses per rotation.
 // PULSE_PER_MOTOR_TURN*GEAR_RATIO          == PULSE_PER_ROTATION
 // RADIAN_PER_ROTATION / PULSE_PER_ROTATION == RADIAN_PER_PULSE
 // delta_counter * RADIAN_PER_PULSE == delta_radian

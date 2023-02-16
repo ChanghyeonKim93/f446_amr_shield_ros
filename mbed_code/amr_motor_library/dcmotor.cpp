@@ -1,7 +1,8 @@
 #include "dcmotor.h"
 
 DCMOTOR::DCMOTOR(PinName pin_pwm, PinName pin_in0, PinName pin_in1)
-: pwm_out_(pin_pwm), in0_(pin_in0), in1_(pin_in1)
+: pwm_out_(pin_pwm), in0_(pin_in0), in1_(pin_in1),
+    kf_(0.1, 0.03, 0.06)
 {
     kp_ = 0.0f; ki_ = 0.0f; kd_ = 0.0f;
 
@@ -38,7 +39,7 @@ void DCMOTOR::setMotorFloat(){ in0_ = true; in1_ = true; };
     
 void DCMOTOR::setMotorRotate(float pwm_signal)
 {
-    float eps = 0.005; // dead-zone.
+    float eps = 0.03; // dead-zone.
     if(pwm_signal >  1.0f) pwm_signal =  1.0f;
     if(pwm_signal < -1.0f) pwm_signal = -1.0f;
     if(pwm_signal > eps){ // Clock-wise Rotation (CW)
@@ -58,28 +59,36 @@ void DCMOTOR::getTimeElapsed(){
 
     if(dt_ > 0.1) dt_ = 0.1;
 };
+void DCMOTOR::updateAngularVelocity(float w_current, float dt){
+    // Kalman filtering.
+    kf_.doFilter(w_current, dt);
+};
 
-void DCMOTOR::controlAngularVelocity(float w_current, float w_desired) {
+void DCMOTOR::controlAngularVelocity(float w_desired) {
     // Get elapsed time from the last control
     getTimeElapsed();
+// Kalman filtering.
+    // kf_.doFilter(w_current, dt_);
+    float w_est = kf_.getFiltered_w();
 
     // PID control        
-    float err_p = w_desired - w_current; // position error
+    float err_p = w_desired - w_est; // position error
     float err_d = err_p - err_prev_; // d error
     
     err_accum_ += err_p*dt_; // I error with clipping
-    if(err_accum_ >  0.2) err_accum_ =  0.2;
-    if(err_accum_ < -0.2) err_accum_ = -0.2;
-    float u = 0.1*(kp_ * err_p + kd_ * err_d/dt_ + ki_ * err_accum_);
+    if(err_accum_ >  0.4) err_accum_ =  0.4;
+    if(err_accum_ < -0.4) err_accum_ = -0.4;
+    float u = 0.03f*(kp_ * err_p + kd_ * err_d + ki_ * err_accum_);
     
-    pwm_value_ += u;
+    pwm_value_ = u;
+    pwm_value_ = 0.03*w_desired;
     float diff_pwm = pwm_value_ - pwm_prev_;
     if(diff_pwm > 0.5) pwm_value_ = pwm_prev_ + 0.5;
     if(diff_pwm < -0.5) pwm_value_ = pwm_prev_ - 0.5;
     
 
-    // pwm_value_ = w_current - w_desired;
-    this->setMotorRotate(pwm_value_);  
+    if(abs(w_desired) < 0.01) this->setMotorFloat();
+    else this->setMotorRotate(pwm_value_);  
     
     err_prev_ = err_p;      
     pwm_prev_ = pwm_value_;

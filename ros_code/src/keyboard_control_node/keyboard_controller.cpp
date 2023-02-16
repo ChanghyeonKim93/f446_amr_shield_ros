@@ -46,31 +46,31 @@ void KeyboardControllerROS::run()
     float v_d = 0.0f;
     float w_d = 0.0f;
     
-    float v_step = 0.004;
-    float w_step = 0.005;
+    float v_step = 0.02;
+    float w_step = 0.3;
 
-    float V_MAX =  0.5;
-    float V_MIN = -0.5; // maximum vel. [m/s]
+    float V_MAX =  1.0;
+    float V_MIN = -1.0; // maximum vel. [m/s]
 
-    float W_MAX =  0.16; // maximum rotation rate [rad/s]
-    float W_MIN = -0.16;
+    float W_MAX =  6.5; // maximum rotation rate [rad/s]
+    float W_MIN = -6.5;
 
     // wheel rotational velocity
     float wheel_left_d  = 0.0f;
     float wheel_right_d = 0.0f;
-    float THRES_WHEEL   = 2.0f;
+    float THRES_WHEEL   = 13.0f;
 
     // Control gain 
-    float kp = 1.0f;
-    float ki = 0.0f;
-    float kd = 1.0f;
+    float kp = 0.5f;
+    float ki = 6.1f;
+    float kd = 0.05f;
 
-    float step_kp = 0.01;
+    float step_kp = 0.05;
     float step_ki = 0.01;
-    float step_kd = 0.01;
+    float step_kd = 0.05;
 
 
-    ros::Rate rate(30); // 100 Hz
+    ros::Rate rate(40); // 100 Hz
     while(ros::ok())
     {
         bool input_ok = true;
@@ -139,11 +139,11 @@ void KeyboardControllerROS::run()
         else {
             // if no keyboard input, naturally deccelerate.
             float v_abs = fabs(v_d);
-            v_abs -= 1.5*v_step;
+            v_abs -= 2.5*v_step;
             v_d = v_abs*((v_d > 0) - (v_d < 0));
 
             float w_abs = fabs(w_d);
-            w_abs -= 1.5*w_step;
+            w_abs -= 2.5*w_step;
             w_d = w_abs*((w_d > 0) - (w_d < 0));
 
             if(fabs(v_d) < 1.5*v_step) v_d = 0;

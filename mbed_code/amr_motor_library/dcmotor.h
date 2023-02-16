@@ -7,6 +7,7 @@
 
 #include "../parameters.h"
 
+#include "kalman_filter.h"
 
 // in1  in2  pwm
 //  0    0    x   brake
@@ -23,7 +24,8 @@ public:
     void setPIDGains(float kp, float ki, float kd);
     void getPIDGains(float& kp, float& ki, float& kd);
 
-    void controlAngularVelocity(float w_current, float w_desired);
+    void controlAngularVelocity(float w_desired);
+    void updateAngularVelocity(float w_current, float dt);
 
 // Motor hardware control functions
 private:
@@ -41,6 +43,8 @@ private:
     PwmOut     pwm_out_;
     DigitalOut in0_;
     DigitalOut in1_;
+
+    KalmanFilter kf_;
 
     // PID controller related
     // PID gains
