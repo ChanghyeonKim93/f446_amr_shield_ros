@@ -120,14 +120,15 @@ ICM42605_SPI imu;
 void workfunction_readSerialUSB() {
     if(serial_usb.tryToReadSerialBuffer()) { // packet ready!
         // If the data is received from the PC, toggle the LED (the green LED on the Nucleo board)
-        led_signal = 1;
-        timeout_serial_read.attach(callback(&flipLED), 5ms);
 
         // Get message from the PC
         int len_recv_message = 0;
         len_recv_message = serial_usb.getReceivedMessage(packet_recv); 
 
         if( len_recv_message > 0) {
+            led_signal = 1;
+            timeout_serial_read.attach(callback(&flipLED), 5ms);
+
 #ifdef DRONE_MODE
             if(packet_recv[0] == 0) 
             {
@@ -166,19 +167,34 @@ void workfunction_readSerialUSB() {
                 if( len_recv_message == MessageTypeByLength::AMRCOMMAND)
                 {
                     FLOAT_UNION ftmp;
-                    ftmp.bytes_[0] = packet_recv[1]; ftmp.bytes_[1] = packet_recv[2]; ftmp.bytes_[2] = packet_recv[3]; ftmp.bytes_[3] = packet_recv[4];   
+                    ftmp.bytes_[0] = packet_recv[1]; 
+                    ftmp.bytes_[1] = packet_recv[2]; 
+                    ftmp.bytes_[2] = packet_recv[3]; 
+                    ftmp.bytes_[3] = packet_recv[4];   
                     wheels_desired[0] = ftmp.float_;
                     
-                    ftmp.bytes_[0] = packet_recv[5]; ftmp.bytes_[1] = packet_recv[6]; ftmp.bytes_[2] = packet_recv[7]; ftmp.bytes_[3] = packet_recv[8];   
+                    ftmp.bytes_[0] = packet_recv[5]; 
+                    ftmp.bytes_[1] = packet_recv[6]; 
+                    ftmp.bytes_[2] = packet_recv[7]; 
+                    ftmp.bytes_[3] = packet_recv[8];   
                     wheels_desired[1] = ftmp.float_;
 
-                    ftmp.bytes_[0] = packet_recv[9]; ftmp.bytes_[1] = packet_recv[10]; ftmp.bytes_[2] = packet_recv[11]; ftmp.bytes_[3] = packet_recv[12];   
+                    ftmp.bytes_[0] = packet_recv[9]; 
+                    ftmp.bytes_[1] = packet_recv[10]; 
+                    ftmp.bytes_[2] = packet_recv[11]; 
+                    ftmp.bytes_[3] = packet_recv[12];   
                     pid_gains[0] = ftmp.float_;
 
-                    ftmp.bytes_[0] = packet_recv[13]; ftmp.bytes_[1] = packet_recv[14]; ftmp.bytes_[2] = packet_recv[15]; ftmp.bytes_[3] = packet_recv[16];   
+                    ftmp.bytes_[0] = packet_recv[13]; 
+                    ftmp.bytes_[1] = packet_recv[14]; 
+                    ftmp.bytes_[2] = packet_recv[15]; 
+                    ftmp.bytes_[3] = packet_recv[16];   
                     pid_gains[1] = ftmp.float_;
 
-                    ftmp.bytes_[0] = packet_recv[17]; ftmp.bytes_[1] = packet_recv[18]; ftmp.bytes_[2] = packet_recv[19]; ftmp.bytes_[3] = packet_recv[20];   
+                    ftmp.bytes_[0] = packet_recv[17]; 
+                    ftmp.bytes_[1] = packet_recv[18]; 
+                    ftmp.bytes_[2] = packet_recv[19]; 
+                    ftmp.bytes_[3] = packet_recv[20];   
                     pid_gains[2] = ftmp.float_;
 
                     // controlDCMotor(wheels_desired, pid_gains);

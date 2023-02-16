@@ -100,11 +100,11 @@ void SerialCommROS::callbackToSend(const std_msgs::Int8MultiArray::ConstPtr& msg
     
     // Drone mode (0): mode(1 byte) + 16 (=2*8) bytes (total eight PWM signals)
     // AMR mode   (1): mode(1 byte) + 20 (=4*5) bytes (two wheels, three control gains (P, I, D))
-    for(int i = 1; i < len; ++i){
-        buf_send_[i-1] = msg->data[i];
+    for(int i = 0; i < len; ++i){
+        buf_send_[i] = msg->data[i];
     }
 
-    sendMessageToNucleo(buf_send_, len-1);
+    sendMessageToNucleo(buf_send_, len);
 };  
 
 void SerialCommROS::showSerialStatistics(double dt){
