@@ -44,12 +44,12 @@
 
 // AMR DC motor parameters
 #define MOTOR_LEFT_PWM  MOTOR_0_PWM // pwm2/1
-#define IN0_LEFT        PA_9
-#define IN1_LEFT        PA_10
+#define IN0_LEFT        PC_9
+#define IN1_LEFT        PC_8
 
 #define MOTOR_RIGHT_PWM MOTOR_1_PWM // pwm2/2
-#define IN0_RIGHT       PA_11
-#define IN1_RIGHT       PA_12
+#define IN0_RIGHT       PB_8
+#define IN1_RIGHT       PC_6
 
 // AnalogIn parameters
 #define ADC1_PIN       PB_0

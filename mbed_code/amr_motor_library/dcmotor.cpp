@@ -13,8 +13,8 @@ DCMOTOR::DCMOTOR(PinName pin_pwm, PinName pin_in0, PinName pin_in1)
 
 // Initialize the motor PWM with zero for safety.
     pwm_out_ = 0.0f;
-    in0_ = false;
-    in1_ = false;
+    in0_ = true;
+    in1_ = true;
 };
 
 void DCMOTOR::setPIDGains(float kp, float ki, float kd) {
@@ -77,6 +77,8 @@ void DCMOTOR::controlAngularVelocity(float w_current, float w_desired) {
     if(diff_pwm > 0.5) pwm_value_ = pwm_prev_ + 0.5;
     if(diff_pwm < -0.5) pwm_value_ = pwm_prev_ - 0.5;
     
+
+    // pwm_value_ = w_current - w_desired;
     this->setMotorRotate(pwm_value_);  
     
     err_prev_ = err_p;      
