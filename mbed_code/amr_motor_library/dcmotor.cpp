@@ -2,7 +2,7 @@
 
 DCMOTOR::DCMOTOR(PinName pin_pwm, PinName pin_in0, PinName pin_in1)
 : pwm_out_(pin_pwm), in0_(pin_in0), in1_(pin_in1),
-    kf_(0.03, 0.04, 0.08)
+    kf_(0.01, 0.03, 0.02)
 {
     kp_ = 0.0f; ki_ = 0.0f; kd_ = 0.0f;
 
@@ -11,6 +11,10 @@ DCMOTOR::DCMOTOR(PinName pin_pwm, PinName pin_in0, PinName pin_in1)
     pwm_prev_  = 0.0f; pwm_value_ = 0.0f;
 
     timer_.start();
+
+    // Set PWM frequency
+    uint32_t period_us_ = (1000000/PWM_FREQUENCY_DCMOTOR);
+    pwm_out_.period_us(period_us_);
 
 // Initialize the motor PWM with zero for safety.
     pwm_out_ = 0.0f;

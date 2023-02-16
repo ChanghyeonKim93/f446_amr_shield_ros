@@ -4,10 +4,10 @@ DroneMotorPwm::DroneMotorPwm()
 : pwm_{PwmOut(MOTOR_0_PWM),PwmOut(MOTOR_1_PWM),PwmOut(MOTOR_2_PWM),PwmOut(MOTOR_3_PWM),
 PwmOut(MOTOR_4_PWM),PwmOut(MOTOR_5_PWM),PwmOut(MOTOR_6_PWM),PwmOut(MOTOR_7_PWM)}
 {
-    uint32_t period_ms_ = (1000/PWM_FREQUENCY);
+    uint32_t period_us_ = (1000000/PWM_FREQUENCY);
 
     for(int i = 0; i < NUM_MOTORS; ++i){
-        pwm_[i].period_ms(period_ms_);
+        pwm_[i].period_us(period_us_);
     }
 
 };

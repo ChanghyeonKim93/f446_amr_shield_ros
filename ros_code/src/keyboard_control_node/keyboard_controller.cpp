@@ -46,14 +46,14 @@ void KeyboardControllerROS::run()
     float v_d = 0.0f;
     float w_d = 0.0f;
     
-    float v_step = 0.1;
-    float w_step = 0.3;
+    float v_step = 0.07;
+    float w_step = 0.35;
 
-    float V_MAX =  0.4;
-    float V_MIN = -0.4; // maximum vel. [m/s]
+    float V_MAX =  0.6;
+    float V_MIN = -0.6; // maximum vel. [m/s]
 
-    float W_MAX =  1.5; // maximum rotation rate [rad/s]
-    float W_MIN = -1.5;
+    float W_MAX =  3.5; // maximum rotation rate [rad/s]
+    float W_MIN = -3.5;
 
     // wheel rotational velocity
     float wheel_left_d  = 0.0f;
@@ -61,12 +61,12 @@ void KeyboardControllerROS::run()
     float THRES_WHEEL   = 13.0f;
 
     // Control gain 
-    float kp = 0.5f;
-    float ki = 6.1f;
-    float kd = 0.05f;
+    float kp = 1.5f;
+    float ki = 2.1f;
+    float kd = 0.5f;
 
     float step_kp = 0.05;
-    float step_ki = 0.01;
+    float step_ki = 0.05;
     float step_kd = 0.05;
 
 
@@ -83,33 +83,33 @@ void KeyboardControllerROS::run()
             v_d -= v_step;
             if(v_d <= V_MIN) v_d = V_MIN;
         }
-        else if(c == 'd') {
+        else if(c == 'a') {
             w_d += w_step;
             if(w_d >= W_MAX) w_d = W_MAX;
         }
-        else if(c == 'a') {
+        else if(c == 'd') {
             w_d -= w_step;
             if(w_d <= W_MIN) w_d = W_MIN;
         }
-        else if(c == 'q') {
+        else if(c == 'e') {
             v_d += 0.3*v_step;   
             w_d -= 1.1*w_step;
             if(v_d >= V_MAX) v_d = V_MAX;
             if(w_d <= W_MIN) w_d = W_MIN;
         }
-        else if(c == 'e') {
+        else if(c == 'q') {
             v_d += 0.3*v_step;   
             w_d += 1.1*w_step;
             if(v_d >= V_MAX) v_d = V_MAX;
             if(w_d >= W_MAX) w_d = W_MAX;
         }
-        else if(c == 'z') {
+        else if(c == 'c') {
             v_d -= 0.3*v_step;   
             w_d += 1.1*w_step;
             if(v_d <= V_MIN) v_d = V_MIN;
             if(w_d >= W_MAX) w_d = W_MAX;
         }
-        else if(c == 'c') {
+        else if(c == 'z') {
             v_d -= 0.3*v_step;   
             w_d -= 1.1*w_step;
             if(v_d <= V_MIN) v_d = V_MIN;
