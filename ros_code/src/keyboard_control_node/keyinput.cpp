@@ -12,7 +12,7 @@ char getch()
     FD_SET(filedesc, &set);
 
     timeout.tv_sec = 0;
-    timeout.tv_usec = 1000;
+    timeout.tv_usec = 3000;
 
     rv = select(filedesc + 1, &set, NULL, NULL, &timeout);
 

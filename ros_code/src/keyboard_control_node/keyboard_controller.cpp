@@ -46,8 +46,8 @@ void KeyboardControllerROS::run()
     float v_d = 0.0f;
     float w_d = 0.0f;
     
-    float v_step = 0.0025/1.5;
-    float w_step = 0.007/1.5;
+    float v_step = 0.004;
+    float w_step = 0.005;
 
     float V_MAX =  0.5;
     float V_MIN = -0.5; // maximum vel. [m/s]
@@ -65,11 +65,11 @@ void KeyboardControllerROS::run()
     float ki = 0.0f;
     float kd = 1.0f;
 
-    float step_kp = 0.05;
-    float step_ki = 0.05;
-    float step_kd = 0.05;
+    float step_kp = 0.01;
+    float step_ki = 0.01;
+    float step_kd = 0.01;
 
-    
+
     ros::Rate rate(100); // 100 Hz
     while(ros::ok())
     {
@@ -92,26 +92,26 @@ void KeyboardControllerROS::run()
             if(w_d <= W_MIN) w_d = W_MIN;
         }
         else if(c == 'q') {
-            v_d += v_step;   
-            w_d -= w_step;
+            v_d += 0.3*v_step;   
+            w_d -= 1.1*w_step;
             if(v_d >= V_MAX) v_d = V_MAX;
             if(w_d <= W_MIN) w_d = W_MIN;
         }
         else if(c == 'e') {
-            v_d += v_step;   
-            w_d += w_step;
+            v_d += 0.3*v_step;   
+            w_d += 1.1*w_step;
             if(v_d >= V_MAX) v_d = V_MAX;
             if(w_d >= W_MAX) w_d = W_MAX;
         }
         else if(c == 'z') {
-            v_d -= v_step;   
-            w_d += w_step;
+            v_d -= 0.3*v_step;   
+            w_d += 1.1*w_step;
             if(v_d <= V_MIN) v_d = V_MIN;
             if(w_d >= W_MAX) w_d = W_MAX;
         }
         else if(c == 'c') {
-            v_d -= v_step;   
-            w_d -= w_step;
+            v_d -= 0.3*v_step;   
+            w_d -= 1.1*w_step;
             if(v_d <= V_MIN) v_d = V_MIN;
             if(w_d <= W_MIN) w_d = W_MIN;
         }
@@ -139,11 +139,11 @@ void KeyboardControllerROS::run()
         else {
             // if no keyboard input, naturally deccelerate.
             float v_abs = fabs(v_d);
-            v_abs -= 0.5*v_step;
+            v_abs -= 1.5*v_step;
             v_d = v_abs*((v_d > 0) - (v_d < 0));
 
             float w_abs = fabs(w_d);
-            w_abs -= 0.5*w_step;
+            w_abs -= 1.5*w_step;
             w_d = w_abs*((w_d > 0) - (w_d < 0));
 
             if(fabs(v_d) < 1.5*v_step) v_d = 0;
@@ -172,6 +172,9 @@ void KeyboardControllerROS::run()
         std_msgs::Float32MultiArray msg_wheels_desired;
         msg_wheels_desired.data.push_back(wheel_left_d);
         msg_wheels_desired.data.push_back(wheel_right_d);
+        msg_wheels_desired.data.push_back(kp);
+        msg_wheels_desired.data.push_back(ki);
+        msg_wheels_desired.data.push_back(kd);
 
         pub_wheels_desired_.publish(msg_wheels_desired);
 
