@@ -23,6 +23,8 @@ public:
 
     void setPIDGains(float kp, float ki, float kd);
     void getPIDGains(float& kp, float& ki, float& kd);
+ 
+    float getFilteredAngularVelocity();
 
     void controlAngularVelocity(float w_desired);
     void updateAngularVelocity(float w_current, float dt);

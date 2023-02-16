@@ -59,7 +59,7 @@ void ledSignals_OK(DigitalOut& led, int n_blink);
 #endif
 
 #ifdef AMR_MODE
-    volatile uint8_t control_step  = 8;
+    volatile uint8_t control_step  = 1;
     volatile uint8_t control_count = 0;
 
     // AMR Motors PWM signals
@@ -74,6 +74,8 @@ void ledSignals_OK(DigitalOut& led, int n_blink);
     #include "encoder_library/motor_encoder.h"
     // TIM_Encoder_InitTypeDef encoder3, encoder4;
     // TIM_HandleTypeDef       timer3, timer4;
+    volatile uint8_t encoder_step  = 4;
+    volatile uint8_t encoder_count = 0;
     FLOAT_UNION radian_per_sec_A;
     FLOAT_UNION radian_per_sec_B;
     MotorEncoder motor_encoder(MOTOR_ENCODER_PERIOD_MS);
@@ -271,21 +273,14 @@ int main()
     while (true) {
         time_curr = timer.elapsed_time();
         std::chrono::duration<int, std::micro> delta_time = time_curr - time_send_prev;
-
-        if(delta_time.count() > LOOP_PERIOD_US) { // 2.5 ms interval (400 Hz)
+        uint32_t dt_micro = delta_time.count();
+        if(dt_micro > LOOP_PERIOD_US) { // 2.5 ms interval (400 Hz)
 #ifdef DRONE_MODE
             // Get ultrasonic distance
             ultra_sonic.checkDistance(); //call checkDistance() as much as possible, as this is where the class checks if dist needs to be called.
             sonar_dist_mm.ushort_ = ultra_sonic.getCurrentDistance(); // timeout 
 #endif
 
-#ifdef AMR_MODE
-            // Get encoder values
-            int32_t dcnt_A = motor_encoder.getDeltaCounter_A();
-            int32_t dcnt_B = motor_encoder.getDeltaCounter_B();
-            radian_per_sec_A.float_ = motor_encoder.getAngularVelocity_A();
-            radian_per_sec_B.float_ = motor_encoder.getAngularVelocity_B();
-#endif
             // Get ADC values
             adc1_voltage_ushort.ushort_ = adc1.read_u16();
             adc2_voltage_ushort.ushort_ = adc2.read_u16();
@@ -326,9 +321,19 @@ int main()
                     signal_trigger = 0;
                 }
 #ifdef AMR_MODE
-                motor_left.updateAngularVelocity(radian_per_sec_A.float_, 0.0025);
-                motor_right.updateAngularVelocity(-radian_per_sec_B.float_, 0.0025);
-                
+                ++encoder_count;
+                if(encoder_count > encoder_step){
+                    encoder_count = 0;
+
+                    // Get encoder values
+                    radian_per_sec_A.float_ = motor_encoder.getAngularVelocity_A();
+                    radian_per_sec_B.float_ = motor_encoder.getAngularVelocity_B();
+                    motor_left.updateAngularVelocity(radian_per_sec_A.float_, (float)(dt_micro*encoder_step)*0.000001);
+                    motor_right.updateAngularVelocity(-radian_per_sec_B.float_, (float)(dt_micro*encoder_step)*0.000001);
+
+                    radian_per_sec_A.float_ = motor_left.getFilteredAngularVelocity();
+                    radian_per_sec_B.float_ = motor_right.getFilteredAngularVelocity();
+                }
                 ++control_count;
                 if(control_count >= control_step) {
                     control_count = 0;

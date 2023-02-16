@@ -2,7 +2,7 @@
 
 DCMOTOR::DCMOTOR(PinName pin_pwm, PinName pin_in0, PinName pin_in1)
 : pwm_out_(pin_pwm), in0_(pin_in0), in1_(pin_in1),
-    kf_(0.1, 0.03, 0.06)
+    kf_(0.03, 0.04, 0.08)
 {
     kp_ = 0.0f; ki_ = 0.0f; kd_ = 0.0f;
 
@@ -24,6 +24,10 @@ void DCMOTOR::setPIDGains(float kp, float ki, float kd) {
 
 void DCMOTOR::getPIDGains(float& kp, float& ki, float& kd) {
     kp = kp_; ki = ki_; kd = kd_;
+};
+float DCMOTOR::getFilteredAngularVelocity()
+{
+    return kf_.getFiltered_w();
 };
 
 
@@ -75,7 +79,7 @@ void DCMOTOR::controlAngularVelocity(float w_desired) {
     float err_p = w_desired - w_est; // position error
     float err_d = err_p - err_prev_; // d error
     
-    err_accum_ += err_p*dt_; // I error with clipping
+    err_accum_ += err_p; // I error with clipping
     if(err_accum_ >  0.4) err_accum_ =  0.4;
     if(err_accum_ < -0.4) err_accum_ = -0.4;
     float u = 0.03f*(kp_ * err_p + kd_ * err_d + ki_ * err_accum_);

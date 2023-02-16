@@ -46,14 +46,14 @@ void KeyboardControllerROS::run()
     float v_d = 0.0f;
     float w_d = 0.0f;
     
-    float v_step = 0.02;
+    float v_step = 0.1;
     float w_step = 0.3;
 
-    float V_MAX =  1.0;
-    float V_MIN = -1.0; // maximum vel. [m/s]
+    float V_MAX =  0.4;
+    float V_MIN = -0.4; // maximum vel. [m/s]
 
-    float W_MAX =  6.5; // maximum rotation rate [rad/s]
-    float W_MIN = -6.5;
+    float W_MAX =  1.5; // maximum rotation rate [rad/s]
+    float W_MIN = -1.5;
 
     // wheel rotational velocity
     float wheel_left_d  = 0.0f;
@@ -70,7 +70,7 @@ void KeyboardControllerROS::run()
     float step_kd = 0.05;
 
 
-    ros::Rate rate(40); // 100 Hz
+    ros::Rate rate(30); // 100 Hz
     while(ros::ok())
     {
         bool input_ok = true;
