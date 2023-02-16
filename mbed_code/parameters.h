@@ -3,8 +3,8 @@
 
 /*
     !!! STRONG RECOMMENDATION !!!
-      - Do not change the Pin Numbers.
-      - You should modify 'numeric values' only.
+      - NEVER CHANGE THE PIN NUMBERS.
+      - You are allowed to modify 'numeric values' only.
 */
 
 // Loop period in milliseconds
@@ -22,6 +22,14 @@
 #define SONAR_TRG      PA_9
 #define SONAR_ECHO     PA_10
 
+// IMU parameters
+#define ICM42605_SPI_MOSI PC_1
+#define ICM42605_SPI_MISO PC_2 
+#define ICM42605_SPI_CLK  PB_13
+#define ICM42605_SPI_CS   PB_12
+#define ICM42605_SPI_INT  PB_14
+#define WAIT_US_FOR_SPI   10 // us, DO NOT CHANGE
+
 // PWM parameters
 #define NUM_MOTORS     8
 #define PWM_FREQUENCY  500   // Hz
@@ -33,6 +41,15 @@
 #define MOTOR_5_PWM    PC_7  // pwm8/2
 #define MOTOR_6_PWM    PC_8  // pwm8/3
 #define MOTOR_7_PWM    PC_9  // pwm8/4
+
+// AMR DC motor parameters
+#define MOTOR_LEFT_PWM  MOTOR_0_PWM // pwm2/1
+#define IN0_LEFT        PA_9
+#define IN1_LEFT        PA_10
+
+#define MOTOR_RIGHT_PWM MOTOR_1_PWM // pwm2/2
+#define IN0_RIGHT       PA_11
+#define IN1_RIGHT       PA_12
 
 // AnalogIn parameters
 #define ADC1_PIN       PB_0
@@ -51,11 +68,4 @@
 // PULSE_PER_MOTOR_TURN*GEAR_RATIO == PULSE_PER_ROTATION
 // delta_counter / PULSE_PER_ROTATION == rotated ratio
 // delta_pulses * RADIAN_PER_PULSE == delta_radian
-
-
-// FOR AMR ... 
-#define AMR_MOTOR_LEFT_PWM  PA_0 // pwm2/1, // PWM (TIMER 2)
-#define AMR_MOTOR_RIGHT_PWM PA_1
-#define AMR_PWM_AUX_0       PB_10
-#define AMR_PWM_AUX_1       PB_2
 #endif

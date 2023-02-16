@@ -70,7 +70,7 @@ void KeyboardControllerROS::run()
     float step_kd = 0.01;
 
 
-    ros::Rate rate(100); // 100 Hz
+    ros::Rate rate(30); // 100 Hz
     while(ros::ok())
     {
         bool input_ok = true;

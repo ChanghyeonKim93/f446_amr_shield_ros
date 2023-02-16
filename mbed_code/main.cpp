@@ -61,10 +61,16 @@ void ledSignals_OK(DigitalOut& led, int n_blink);
 #endif
 
 #ifdef AMR_MODE
-    // AMR Motors PWM signals
-    float wheels_desired[2] = {0,0};
-    float pid_gains[3]      = {0,0,0};
+    volatile uint8_t control_step  = 4;
+    volatile uint8_t control_count = 0;
 
+    // AMR Motors PWM signals
+    #include "amr_motor_library/dcmotor.h"
+    float wheels_desired[2] = {0,0};
+    float wheels_current[2] = {0,0};
+    float pid_gains[3]      = {0,0,0};
+    DCMOTOR motor_left(MOTOR_LEFT_PWM, IN0_LEFT, IN1_LEFT);
+    DCMOTOR motor_right(MOTOR_RIGHT_PWM, IN0_RIGHT, IN1_RIGHT);
 
     // Encoder library
     #include "encoder_library/motor_encoder.h"
@@ -149,6 +155,7 @@ void workfunction_readSerialUSB() {
                 }
             }
 #endif
+
 #ifdef AMR_MODE
             if (packet_recv[0] == 1)// AMR mode
             {
@@ -219,7 +226,9 @@ int main()
     ledSignals_OK(led_signal, 1);
 
     // Ultrasonic initialize
+#ifdef DRONE_MODE
     ultra_sonic.startUpdates();
+#endif
     ledSignals_OK(led_signal, 2);
 
     // IMU initialize
@@ -303,7 +312,16 @@ int main()
                     wait_us(100);
                     signal_trigger = 0;
                 }
-
+#ifdef AMR_MODE
+                ++control_count;
+                if(control_count >= control_step) {
+                    control_count = 0;
+                    motor_left.setPIDGains(pid_gains[0],pid_gains[1],pid_gains[2]);
+                    motor_right.setPIDGains(pid_gains[0],pid_gains[1],pid_gains[2]);
+                    motor_left.controlAngularVelocity(radian_per_sec_A.float_, wheels_desired[0]);
+                    motor_right.controlAngularVelocity(radian_per_sec_B.float_, wheels_desired[1]);
+                }
+#endif
                 // IMU data (3D acc, 3D gyro, 3D magnetometer)
                 packet_send[0] = ax.bytes_[0]; packet_send[1] = ax.bytes_[1];  packet_send[2] = ax.bytes_[2];  packet_send[3] = ax.bytes_[3];
                 packet_send[4] = ay.bytes_[0]; packet_send[5] = ay.bytes_[1];  packet_send[6] = ay.bytes_[2];  packet_send[7] = ay.bytes_[3];
