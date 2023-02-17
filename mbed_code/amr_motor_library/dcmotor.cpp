@@ -81,21 +81,20 @@ void DCMOTOR::controlAngularVelocity(float w_desired) {
 
     // PID control        
     float err_p = w_desired - w_est; // position error
-    float err_d = err_p - err_prev_; // d error
     
-    err_accum_ += err_p; // I error with clipping
-    if(err_accum_ >  0.4) err_accum_ =  0.4;
-    if(err_accum_ < -0.4) err_accum_ = -0.4;
-    float u = 0.03f*(kp_ * err_p + kd_ * err_d + ki_ * err_accum_);
+    float du = (kp_ * err_p + kd_ * (err_p-err_prev_))* dt_;
     
-    pwm_value_ = u;
-    pwm_value_ = 0.03*w_desired;
+    
+    pwm_value_ += du;
     float diff_pwm = pwm_value_ - pwm_prev_;
     if(diff_pwm > 0.5) pwm_value_ = pwm_prev_ + 0.5;
     if(diff_pwm < -0.5) pwm_value_ = pwm_prev_ - 0.5;
     
 
-    if(abs(w_desired) < 0.01) this->setMotorFloat();
+    if(abs(w_desired) < 0.01) {
+        pwm_value_ = 0.0f;
+        this->setMotorFloat();
+    }
     else this->setMotorRotate(pwm_value_);  
     
     err_prev_ = err_p;      
