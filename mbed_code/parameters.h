@@ -43,7 +43,7 @@
 #define MOTOR_7_PWM    PC_9  // pwm8/4
 
 // AMR DC motor parameters
-#define PWM_FREQUENCY_DCMOTOR 15000 // Hz
+#define PWM_FREQUENCY_DCMOTOR 20000 // Hz
 #define MOTOR_LEFT_PWM  MOTOR_0_PWM // pwm2/1
 #define IN0_LEFT        PC_9
 #define IN1_LEFT        PC_8

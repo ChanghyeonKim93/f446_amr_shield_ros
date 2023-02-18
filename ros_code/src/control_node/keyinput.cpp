@@ -1,4 +1,4 @@
-#include "keyboard_control_node/keyinput.h"
+#include "control_node/keyinput.h"
 
 char getch()
 {

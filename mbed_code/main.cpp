@@ -3,7 +3,8 @@
         Designed by Changhyeon Kim, 2023.01.
         e-mail: hyun91015 at gmail.com
     See documentation and software in the below github link:
-        https://github.com/ChanghyeonKim93/f446_drone_shield_ros
+        DRONE MODE: https://github.com/ChanghyeonKim93/f446_drone_shield_ros
+        AMR MODE  : https://github.com/ChanghyeonKim93/f446_amr_shield_ros
 */
 
 /*  YOU CAN CHANGE THE PARAMETERS IN 'parameter.h'
@@ -59,7 +60,8 @@ void ledSignals_OK(DigitalOut& led, int n_blink);
 #endif
 
 #ifdef AMR_MODE
-    volatile uint8_t control_step  = 1;
+// MOTOR CONTROL LOOP : 100 Hz
+    volatile uint8_t control_step  = 3;
     volatile uint8_t control_count = 0;
 
     // AMR Motors PWM signals
@@ -74,7 +76,7 @@ void ledSignals_OK(DigitalOut& led, int n_blink);
     #include "encoder_library/motor_encoder.h"
     // TIM_Encoder_InitTypeDef encoder3, encoder4;
     // TIM_HandleTypeDef       timer3, timer4;
-    volatile uint8_t encoder_step  = 4;
+    volatile uint8_t encoder_step  = 3;
     volatile uint8_t encoder_count = 0;
     FLOAT_UNION radian_per_sec_A;
     FLOAT_UNION radian_per_sec_B;
@@ -90,7 +92,7 @@ AnalogIn adc2(ADC2_PIN);
 // Camera Trigger signal
 #define CAMERA_TRIGGER_LOW  0b01010101
 #define CAMERA_TRIGGER_HIGH 0b10101010
-volatile uint8_t trigger_step  = 25;
+volatile uint8_t trigger_step  = 20;
 volatile uint8_t trigger_count = 0;
 volatile uint8_t flag_camera_trigger = CAMERA_TRIGGER_LOW;
 DigitalOut signal_trigger(TRIGGER_PIN);
@@ -328,11 +330,12 @@ int main()
                     // Get encoder values
                     radian_per_sec_A.float_ = motor_encoder.getAngularVelocity_A();
                     radian_per_sec_B.float_ = motor_encoder.getAngularVelocity_B();
-                    motor_left.updateAngularVelocity(radian_per_sec_A.float_, (float)(dt_micro*encoder_step)*0.000001);
-                    motor_right.updateAngularVelocity(-radian_per_sec_B.float_, (float)(dt_micro*encoder_step)*0.000001);
+                    motor_left.updateAngularVelocity(radian_per_sec_A.float_, (float)(dt_micro*(encoder_step+1))*0.000001);
+                    motor_right.updateAngularVelocity(-radian_per_sec_B.float_, (float)(dt_micro*(encoder_step+1))*0.000001);
 
                     radian_per_sec_A.float_ = motor_left.getFilteredAngularVelocity();
                     radian_per_sec_B.float_ = motor_right.getFilteredAngularVelocity();
+                    // radian_per_sec_B.float_ = motor_left.getFilteredAngularAcceleration();
                 }
                 ++control_count;
                 if(control_count >= control_step) {

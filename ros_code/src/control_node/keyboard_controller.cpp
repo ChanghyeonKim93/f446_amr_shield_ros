@@ -1,4 +1,4 @@
-#include "keyboard_control_node/keyboard_controller.h"
+#include "control_node/keyboard_controller.h"
 
 KeyboardControllerROS::KeyboardControllerROS(const ros::NodeHandle& nh)
 : nh_(nh)

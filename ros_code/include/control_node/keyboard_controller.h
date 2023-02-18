@@ -22,7 +22,6 @@ public:
 
 private:
     ros::NodeHandle nh_;
-
     ros::Publisher pub_wheels_desired_;
 
 

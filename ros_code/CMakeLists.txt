@@ -34,10 +34,13 @@ set(SRC ${SRC}
 
   src/serial_node/serial_comm_ros.cpp
 
-  src/keyboard_control_node/keyboard_controller.cpp
-  src/keyboard_control_node/keyinput.cpp
+  src/control_node/keyboard_controller.cpp
+  src/control_node/keyboard_controller_position_yaw.cpp
+  src/control_node/geometry_controller.cpp
+  src/control_node/keyinput.cpp
 
   src/utility/timer.cpp
+  src/utility/geometry_library.cpp
 )
 
 set(includeDirs ${includeDirs} ${CMAKE_CURRENT_BINARY_DIR})
@@ -54,8 +57,11 @@ target_link_libraries (rostopic_node ${catkin_LIBRARIES} ${Eigen_LIBRARIES})
 add_executable(serial_node src/serial_node/main_serial_node.cpp ${SRC})
 target_link_libraries (serial_node ${catkin_LIBRARIES} ${Eigen_LIBRARIES} ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_REGEX_LIBRARY})
 
-add_executable(keyboard_controller_node src/keyboard_control_node/main_keyboard_controller.cpp ${SRC})
+add_executable(keyboard_controller_node src/control_node/main_keyboard_controller_position_yaw.cpp ${SRC})
 target_link_libraries (keyboard_controller_node ${catkin_LIBRARIES} ${Eigen_LIBRARIES} ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_REGEX_LIBRARY})
+
+add_executable(geometry_controller_node src/control_node/main_geometry_controller.cpp ${SRC})
+target_link_libraries (geometry_controller_node ${catkin_LIBRARIES} ${Eigen_LIBRARIES} ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_REGEX_LIBRARY})
 
 # add_executable(test_publisher_node src/test/test_publisher.cpp ${SRC})
 # target_link_libraries (test_publisher_node ${catkin_LIBRARIES} ${Eigen_LIBRARIES})

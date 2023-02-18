@@ -1,0 +1,23 @@
+<launch> 
+    <!-- Topicname settings-->
+    <arg name="topicname_optitrack"            default="/optitrack/AMR0/poseStamped"/> <!-- Optitrack Object topicname-->
+    <arg name="topicname_position_yaw_desired" default="/amr/user_command/desired_position_yaw"/> <!-- It must be same with the same one of 'rostopic_node'. -->
+    
+    <!-- AMR Robot parameters -->
+    <arg name="wheel_to_imu_dist_left"  default="0.16610"/>
+    <arg name="wheel_to_imu_dist_right" default="0.16450"/>
+    <arg name="wheel_diameter_left"     default="0.14429"/>
+    <arg name="wheel_diameter_right"    default="0.14434"/>
+
+    <!-- Run node -->
+    <node pkg="f446_amr_shield_ros" name="geometry_controller_node" type="geometry_controller_node" output="screen">
+        <param name="topicname_optitrack"   type="string" value="$(arg topicname_optitrack)"/>
+        <param name="topicname_position_yaw_desired"   type="string" value="$(arg topicname_position_yaw_desired)"/>
+        
+        <param name="wheel_to_imu_dist_left"    type="double" value="$(arg wheel_to_imu_dist_left)"/>
+        <param name="wheel_to_imu_dist_right"   type="double" value="$(arg wheel_to_imu_dist_right)"/>
+        <param name="wheel_diameter_left"       type="double" value="$(arg wheel_diameter_left)"/>
+        <param name="wheel_diameter_right"      type="double" value="$(arg wheel_diameter_right)"/>
+    </node> 
+
+</launch> 

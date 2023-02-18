@@ -10,7 +10,8 @@ public:
     KalmanFilter(float sig_w, float sig_a, float sig_v) : sig_w_(sig_w), sig_a_(sig_a), sig_v_(sig_v)
     {
         P_[0][0] = 10; P_[0][1] = 0; P_[1][0] = 0; P_[1][1]=10;
-        Q_[0][0] = sig_w_*sig_w_; Q_[1][1] = sig_a_*sig_a_;
+        Q_[0][0] = sig_w_*sig_w_; 
+        Q_[1][1] = sig_a_*sig_a_;
         R_ = sig_v_*sig_v_;
         X_[0] = 0; X_[1] = 0;
     };

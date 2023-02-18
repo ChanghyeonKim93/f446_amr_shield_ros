@@ -2,7 +2,7 @@
 
 DCMOTOR::DCMOTOR(PinName pin_pwm, PinName pin_in0, PinName pin_in1)
 : pwm_out_(pin_pwm), in0_(pin_in0), in1_(pin_in1),
-    kf_(0.01, 0.03, 0.02)
+    kf_(0.01, 0.01, 0.05)
 {
     kp_ = 0.0f; ki_ = 0.0f; kd_ = 0.0f;
 
@@ -33,7 +33,10 @@ float DCMOTOR::getFilteredAngularVelocity()
 {
     return kf_.getFiltered_w();
 };
-
+float DCMOTOR::getFilteredAngularAcceleration()
+{
+    return kf_.getFiltered_a();
+};
 
 // in1  in2  pwm
 //  0    0    x   brake
@@ -47,7 +50,7 @@ void DCMOTOR::setMotorFloat(){ in0_ = true; in1_ = true; };
     
 void DCMOTOR::setMotorRotate(float pwm_signal)
 {
-    float eps = 0.03; // dead-zone.
+    float eps = 0.02; // dead-zone.
     if(pwm_signal >  1.0f) pwm_signal =  1.0f;
     if(pwm_signal < -1.0f) pwm_signal = -1.0f;
     if(pwm_signal > eps){ // Clock-wise Rotation (CW)
@@ -78,20 +81,25 @@ void DCMOTOR::controlAngularVelocity(float w_desired) {
 // Kalman filtering.
     // kf_.doFilter(w_current, dt_);
     float w_est = kf_.getFiltered_w();
+    float a_est = kf_.getFiltered_a();
 
     // PID control        
     float err_p = w_desired - w_est; // position error
+    float derr = (err_p-err_prev_);
+    err_accum_ += (ki_ * err_p + kd_ * (-derr))* dt_;
     
-    float du = (kp_ * err_p + kd_ * (err_p-err_prev_))* dt_;
     
-    
-    pwm_value_ += du;
+    if(err_accum_ >  0.8f) err_accum_ = 0.8f;
+    if(err_accum_ < -0.8f) err_accum_ = -0.8f;
+
+    pwm_value_ = err_accum_ + kp_ * err_p * 0.1;
     float diff_pwm = pwm_value_ - pwm_prev_;
     if(diff_pwm > 0.5) pwm_value_ = pwm_prev_ + 0.5;
     if(diff_pwm < -0.5) pwm_value_ = pwm_prev_ - 0.5;
     
 
     if(abs(w_desired) < 0.01) {
+        err_accum_ = 0.0f;
         pwm_value_ = 0.0f;
         this->setMotorFloat();
     }

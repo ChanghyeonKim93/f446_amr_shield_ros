@@ -3,7 +3,7 @@
 
 #include <ros/ros.h>
 
-#include "keyboard_control_node/keyboard_controller.h"
+#include "control_node/keyboard_controller.h"
 
 int main(int argc, char **argv) {
     ros::init(argc, argv, "keyboard_controller_node");
