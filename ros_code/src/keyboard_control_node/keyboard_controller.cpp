@@ -61,9 +61,9 @@ void KeyboardControllerROS::run()
     float THRES_WHEEL   = 13.0f;
 
     // Control gain 
-    float kp = 0.4f;
-    float ki = 0.0f;
-    float kd = 3.5f;
+    float kp = 0.6f;
+    float ki = 1.7f;
+    float kd = 0.9f;
 
     float step_kp = 0.05;
     float step_ki = 0.05;
